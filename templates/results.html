@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+</head>
+<body>
+    <h2>Stack Overflow Search Results</h2>
+    {% if results %}
+        <ul>
+            {% for item in results %}
+                <li>
+                    <a href="{{ item.link }}">{{ item.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+    <a href="/">Back to editor</a>
+</body>
+</html>
