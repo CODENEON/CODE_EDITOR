@@ -24,9 +24,10 @@
             <!-- Stack Overflow Search -->
             <div class="col-md-4">
                 <h4>Search Stack Overflow</h4>
-                <form id="searchForm" method="POST" action="/search_stack_overflow">
+                <!-- Update: Submit using AJAX -->
+                <form id="searchForm" onsubmit="event.preventDefault(); searchStackOverflow($('#query').val());">
                     <div class="input-group">
-                        <input type="text" id="query" name="query" class="form-control" placeholder="Enter your query...">
+                        <input type="text" id="query" class="form-control" placeholder="Enter your query...">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">Search</button>
                         </div>
@@ -47,13 +48,13 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <!-- CodeMirror JS -->
+    <!-- Add jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- CodeMirror JS (Added this section for CodeMirror) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
