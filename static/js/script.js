@@ -66,20 +66,30 @@ function searchStackOverflow(query) {
 }
 
 
-// Initialize the code editor using CodeMirror
 document.addEventListener('DOMContentLoaded', () => {
     const codeEditor = document.getElementById('codeEditor');
     if (codeEditor) {
         editor = CodeMirror.fromTextArea(codeEditor, {
             lineNumbers: true,
             mode: "python",
-            theme: "material-darker"
+            theme: "material-darker",
+            extraKeys: {"Ctrl-Space": "autocomplete"},
+            hintOptions: {
+                completeSingle: false // Do not automatically complete when there's only one suggestion
+            }
+        });
+
+        // Trigger autocompletion automatically as you type
+        editor.on('inputRead', function(cm, event) {
+            if (event.origin !== "+input") return; // Ignore non-typing events
+            cm.showHint({completeSingle: false});
         });
     }
 
     const resultsContainer = document.getElementById("searchResults");
     resultsContainer.style.display = "none";
 });
+
 
 // Function to handle form submit
 function handleSearchSubmit(event) {
