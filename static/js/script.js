@@ -44,8 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
 function handleSearchSubmit(event) {
     event.preventDefault(); // Prevent the default form submission behavior
     const query = document.getElementById('searchQuery').value;
+    console.log(query)
     searchStackOverflow(query);
 }
+
+function searchStackOverflow(query) {
+    fetch('/search_stack_overflow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: query })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Search results:", data);  // Log the search results for debugging
+        displayResults(data); // Function to display the results on the page
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
 
 // Function to handle running code
 function runCode() {
@@ -82,6 +99,50 @@ function runCode() {
         document.getElementById("outputArea").textContent = "An error occurred while running the code.";
     });
 }
+
+function displayResults(data) {
+    const resultsContainer = document.getElementById("searchResults");
+    console.log(data);
+    resultsContainer.innerHTML = "";  // Clear any previous results
+
+    if (data.items && data.items.length > 0) {
+        // Loop through the search results and display them
+        data.items.forEach(item => {
+            const resultItem = document.createElement("li");
+            resultItem.classList.add("list-group-item");
+            
+            // Add title link
+            const titleLink = document.createElement("a");
+            titleLink.href = item.link;
+            titleLink.target = "_blank";  // Open in a new tab
+            titleLink.textContent = item.title;
+            resultItem.appendChild(titleLink);
+
+            // Optionally add additional details
+            const snippet = document.createElement("p");
+            snippet.textContent = item.owner.display_name|| "";
+            resultItem.appendChild(snippet);
+
+            // Append the result item to the results container
+            resultsContainer.appendChild(resultItem);
+            console.log("done");
+        });
+        
+        // Make the search results container visible when there are results
+        resultsContainer.style.display = "block";
+    } else {
+        // If no results found, display a message
+        const noResultsMessage = document.createElement("li");
+        noResultsMessage.classList.add("list-group-item");
+        noResultsMessage.textContent = "No results found.";
+        resultsContainer.appendChild(noResultsMessage);
+
+        // Make the search results container visible when there are no results
+        resultsContainer.style.display = "block";
+    }
+}
+
+
 
 function clearOutput() {
     document.getElementById("outputArea").textContent = "";
