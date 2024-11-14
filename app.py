@@ -11,9 +11,7 @@ def index():
 @app.route('/search_stack_overflow', methods=['POST'])
 def search_stack_overflow():
     query = request.json['query']
-    print(f"Search Query: {query}")  # Log the query for debugging
-    response = requests.get(STACK_OVERFLOW_API_URL, params={'intitle': query, 'site': 'stackoverflow'})
-    print(f"API Response: {response.json()}")  # Log the response for debugging
+    response = requests.get(STACK_OVERFLOW_API_URL, params={'q': query, 'answers': 1})
     return jsonify(response.json())
 
 @app.route('/run_code', methods=['POST'])
@@ -39,11 +37,6 @@ def run_code():
         sys.stdout = old_stdout
 
     return jsonify({"output": output})
-
-@app.route('/recommend_expert')
-def recommend_expert():
-    experts = ["Expert 1", "Expert 2"]  # Replace with actual expert recommendation logic
-    return jsonify({"experts": ", ".join(experts)})
 
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000/")

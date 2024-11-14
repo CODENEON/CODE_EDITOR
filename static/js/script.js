@@ -3,9 +3,17 @@ let editor;
 
 // This function will be triggered when the search form is submitted
 function searchStackOverflow(query) {
-    // Display a loading message
-    console.log('Query being sent:', query);
-    document.getElementById("searchResults").innerHTML = "Searching...";
+    const resultsContainer = document.getElementById("searchResults");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const resultsWrapper = document.getElementById("searchResultsWrapper");
+
+    resultsContainer.style.display = "none";
+    // Show the loading spinner
+    loadingSpinner.style.display = "block";
+    resultsContainer.innerHTML = "";  // Clear previous results
+
+    // Hide the "No results" message if any
+    resultsWrapper.querySelector('.no-results')?.remove();
 
     // Use fetch to make the AJAX request
     fetch('/search_stack_overflow', {
@@ -22,11 +30,9 @@ function searchStackOverflow(query) {
         return response.json();  // Parse the JSON response
     })
     .then(data => {
-        // Log the entire response data to the console
-        console.log(data);
+        // Hide the loading spinner once the request is done
+        loadingSpinner.style.display = "none";
 
-        const resultsContainer = document.getElementById("searchResults");
-        
         // Check if the response has items
         if (data.items && data.items.length > 0) {
             // Display the search results
@@ -37,15 +43,28 @@ function searchStackOverflow(query) {
                         <small>By ${item.owner.display_name} - ${item.creation_date}</small>\
                     </div>`;
             }).join('');
+            // Show the results container when results are available
+            resultsContainer.style.display = "block";
         } else {
-            resultsContainer.innerHTML = "No results found.";
+            // If no results, display a message
+            resultsContainer.innerHTML = "";
+            const noResultsMessage = document.createElement("div");
+            noResultsMessage.classList.add("no-results");
+            noResultsMessage.textContent = "No results found.";
+            resultsWrapper.appendChild(noResultsMessage);
+            // Hide the results container if no results
+            resultsContainer.style.display = "none";
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById("searchResults").innerHTML = "An error occurred while searching.";
+        resultsContainer.innerHTML = "An error occurred while searching.";
+        loadingSpinner.style.display = "none";
+        // Hide the results container if an error occurs
+        resultsContainer.style.display = "none";
     });
 }
+
 
 // Initialize the code editor using CodeMirror
 document.addEventListener('DOMContentLoaded', () => {
@@ -53,10 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (codeEditor) {
         editor = CodeMirror.fromTextArea(codeEditor, {
             lineNumbers: true,
-            mode: "python",  // You can change this to the mode of your choice
+            mode: "python",
             theme: "material-darker"
         });
     }
+
+    const resultsContainer = document.getElementById("searchResults");
+    resultsContainer.style.display = "none";
 });
 
 // Function to handle form submit
@@ -100,4 +122,8 @@ function runCode() {
         console.error('Error:', error);
         document.getElementById("outputArea").textContent = "An error occurred while running the code.";
     });
+}
+
+function clearOutput() {
+    document.getElementById("outputArea").textContent = "";
 }

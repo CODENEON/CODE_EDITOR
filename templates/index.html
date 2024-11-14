@@ -24,7 +24,6 @@
             <!-- Stack Overflow Search -->
             <div class="col-md-4">
                 <h4>Search Stack Overflow</h4>
-                <!-- Update: Submit using AJAX -->
                 <form id="searchForm" onsubmit="event.preventDefault(); searchStackOverflow($('#query').val());">
                     <div class="input-group">
                         <input type="text" id="query" class="form-control" placeholder="Enter your query...">
@@ -33,7 +32,15 @@
                         </div>
                     </div>
                 </form>
-                <div id="searchResults" class="mt-3"></div>
+                <div id="searchResultsWrapper">
+                    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                        <!-- Loading spinner animation -->
+                        <div class="spinner"></div>
+                    </div>
+                    <div id="searchResults" class="results-container">
+                        <!-- Results will be inserted here -->
+                    </div>
+                </div>
             </div>
 
             <!-- Code Editor and Output -->
@@ -41,6 +48,7 @@
                 <h4>Code Editor</h4>
                 <textarea id="codeEditor" name="code"></textarea>
                 <button class="btn btn-success mt-3" onclick="runCode()">Run Code</button>
+                <button class="btn btn-danger mt-3" onclick="clearOutput()">Clear Output</button>
                 <button class="btn btn-info mt-3" onclick="recommendExpert()">Recommend Expert</button>
                 <h5 class="mt-3">Output</h5>
                 <pre id="outputArea" class="output-box bg-light text-dark p-3"></pre>
@@ -55,7 +63,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
 
-    <!-- Custom JS -->
+    <!-- Custom JS and CSS -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='css/style.css') }}"></script>
 </body>
 </html>

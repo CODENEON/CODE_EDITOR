@@ -1,0 +1,88 @@
+/* Wrapper for search results and loading spinner */
+#searchResultsWrapper {
+    position: relative;
+    height: 500px;  /* Maximum height for results container */
+    overflow-y: scroll;  /* Allow vertical scrolling */
+    margin-top: 8px;
+    border-radius: 8px;
+}
+
+/* Hide scrollbar but allow scrolling */
+#searchResultsWrapper::-webkit-scrollbar {
+    display: none;  /* Hide the scrollbar */
+}
+
+/* Loading spinner animation */
+.loading-spinner {
+    position: absolute;
+    top: 30%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border: 6px solid rgba(0, 0, 0, 0.1);
+    border-top: 6px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Animation for the loading spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Main results container */
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));  /* Responsive grid */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 2px solid #ddd;
+}
+
+/* Individual result item styling */
+.results-container div {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 7px;
+}
+
+.results-container div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Title link styling */
+.results-container a {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.results-container a:hover {
+    text-decoration: underline;
+}
+
+/* Metadata under the title */
+.results-container small {
+    font-size: 0.9rem;
+    color: #555;
+    display: block;
+    margin-top: 5px;
+}
+
+/* No results message */
+.no-results {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
