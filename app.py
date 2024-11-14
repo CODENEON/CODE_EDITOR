@@ -10,9 +10,27 @@ def index():
 
 @app.route('/search_stack_overflow', methods=['POST'])
 def search_stack_overflow():
-    query = request.json['query']
-    response = requests.get(STACK_OVERFLOW_API_URL, params={'q': query, 'answers': 1})
-    return jsonify(response.json())
+    query = request.json.get('query')
+    print(f"Search Query: {query}")  # Log the query for debugging
+    
+    try:
+        response = requests.get(
+            STACK_OVERFLOW_API_URL,
+            params={
+                'intitle': query,
+                'tagged': 'python',       # Only search for questions tagged with 'python'
+                'site': 'stackoverflow',
+                'order': 'desc',
+                'sort': 'activity'
+            }
+        )
+        response.raise_for_status()  # Check if the request was successful
+        print(f"API Response: {response.json()}")  # Log the response for debugging
+        return jsonify(response.json())
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")  # Log any request errors
+        return jsonify({'error': 'An error occurred while processing your request.'}), 500
 
 @app.route('/run_code', methods=['POST'])
 def run_code():

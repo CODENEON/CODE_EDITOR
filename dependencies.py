@@ -7,4 +7,4 @@ import webbrowser
 
 app = Flask(__name__)
 
-STACK_OVERFLOW_API_URL = 'https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=activity&site=stackoverflow'
+STACK_OVERFLOW_API_URL = 'https://api.stackexchange.com/2.3/search'
