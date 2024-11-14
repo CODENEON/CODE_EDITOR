@@ -4,6 +4,7 @@ from utilities import *
 # Initialize the Flask app
 app = Flask(__name__)
 
+# routes and functions
 @app.route('/')
 def index():
     return render_template("index.html")
