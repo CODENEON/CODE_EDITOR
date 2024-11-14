@@ -46,6 +46,13 @@
             <!-- Code Editor and Output -->
             <div class="col-md-8">
                 <h4>Code Editor</h4>
+                
+                <!-- Autocompletion Toggle -->
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="autocompleteToggle">
+                    <label class="form-check-label" for="autocompleteToggle">Enable Autocompletion</label>
+                </div>
+
                 <textarea id="codeEditor" name="code"></textarea>
                 <button class="btn btn-success mt-3" onclick="runCode()">Run Code</button>
                 <button class="btn btn-danger mt-3" onclick="clearOutput()">Clear Output</button>
@@ -63,15 +70,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
 
-    <!-- Custom JS and CSS -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='css/style.css') }}"></script>
-
-    <!-- Autocompletion -->   
+    <!-- Autocompletion Addons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/python-hint.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.css">
 
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
 </html>
