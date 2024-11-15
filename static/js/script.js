@@ -120,6 +120,21 @@ function load_editor() {
 }
 
 
+//Toggling Search Button
+function toggleSearchButton() {
+    const queryInput = document.getElementById("query");
+    const searchButton = document.getElementById("searchButton");
+
+    // Show the button if there's input, hide it otherwise
+    if (queryInput.value.trim() !== "") {
+        searchButton.style.display = "inline-block";
+    } else {
+        searchButton.style.display = "none";
+    }
+}
+
+
+
 
 // Function to handle form submit
 function handleSearchSubmit(event) {
