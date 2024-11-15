@@ -1,5 +1,70 @@
 // Global variable to store the CodeMirror editor instance
 let editor;
+// This function will be triggered when the search form is submitted
+function searchStackOverflow(query) {
+    
+    const resultsContainer = document.getElementById("searchResults");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const resultsWrapper = document.getElementById("searchResultsWrapper");
+
+    resultsContainer.style.display = "none";
+    // Show the loading spinner
+    loadingSpinner.style.display = "block";
+    resultsContainer.innerHTML = "";  // Clear previous results
+
+    // Hide the "No results" message if any
+    resultsWrapper.querySelector('.no-results')?.remove();
+
+    // Use fetch to make the AJAX request
+    fetch('/search_stack_overflow', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query: query })  // Send query as JSON payload
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();  // Parse the JSON response
+    })
+    .then(data => {
+        // Hide the loading spinner once the request is done
+        loadingSpinner.style.display = "none";
+
+        // Check if the response has items
+        if (data.items && data.items.length > 0) {
+            // Display the search results
+            resultsContainer.innerHTML = data.items.map(item => {
+                return `\
+                    <div>\
+                        <a href="${item.link}" target="_blank">${item.title}</a><br>\
+                        <small>By ${item.owner.display_name} - &#x1F441; ${item.view_count}</small>\
+                    </div>`;
+            }).join('');
+            // Show the results container when results are available
+            resultsContainer.style.display = "block";
+        } else {
+            // If no results, display a message
+            resultsContainer.innerHTML = "";
+            const noResultsMessage = document.createElement("div");
+            noResultsMessage.classList.add("no-results");
+            noResultsMessage.textContent = "No results found.";
+            resultsWrapper.appendChild(noResultsMessage);
+            // Hide the results container if no results
+            resultsContainer.style.display = "none";
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultsContainer.innerHTML = "An error occurred while searching.";
+        loadingSpinner.style.display = "none";
+        // Hide the results container if an error occurs
+        resultsContainer.style.display = "none";
+    });
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const codeEditor = document.getElementById('codeEditor');
@@ -48,21 +113,6 @@ function handleSearchSubmit(event) {
     searchStackOverflow(query);
 }
 
-function searchStackOverflow(query) {
-    fetch('/search_stack_overflow', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: query })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Search results:", data);  // Log the search results for debugging
-        displayResults(data); // Function to display the results on the page
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-
 
 // Function to handle running code
 function runCode() {
@@ -99,50 +149,6 @@ function runCode() {
         document.getElementById("outputArea").textContent = "An error occurred while running the code.";
     });
 }
-
-function displayResults(data) {
-    const resultsContainer = document.getElementById("searchResults");
-    console.log(data);
-    resultsContainer.innerHTML = "";  // Clear any previous results
-
-    if (data.items && data.items.length > 0) {
-        // Loop through the search results and display them
-        data.items.forEach(item => {
-            const resultItem = document.createElement("li");
-            resultItem.classList.add("list-group-item");
-            
-            // Add title link
-            const titleLink = document.createElement("a");
-            titleLink.href = item.link;
-            titleLink.target = "_blank";  // Open in a new tab
-            titleLink.textContent = item.title;
-            resultItem.appendChild(titleLink);
-
-            // Optionally add additional details
-            const snippet = document.createElement("p");
-            snippet.textContent = item.owner.display_name|| "";
-            resultItem.appendChild(snippet);
-
-            // Append the result item to the results container
-            resultsContainer.appendChild(resultItem);
-            console.log("done");
-        });
-        
-        // Make the search results container visible when there are results
-        resultsContainer.style.display = "block";
-    } else {
-        // If no results found, display a message
-        const noResultsMessage = document.createElement("li");
-        noResultsMessage.classList.add("list-group-item");
-        noResultsMessage.textContent = "No results found.";
-        resultsContainer.appendChild(noResultsMessage);
-
-        // Make the search results container visible when there are no results
-        resultsContainer.style.display = "block";
-    }
-}
-
-
 
 function clearOutput() {
     document.getElementById("outputArea").textContent = "";
