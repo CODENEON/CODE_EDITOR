@@ -64,11 +64,10 @@
                 <pre id="outputArea" class="output-box bg-light text-dark p-3"></pre>
             </div>
         </div>
-        <!-- Modal for showing expert recommendations -->
-        <div id="expertModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Recommended Experts</h2>
+        <!-- Sidebar for showing expert recommendations -->
+        <div id="expertSidebar" class="sidebar">
+            <span class="close-btn">&times;</span>
+            <h3>Recommended Experts</h3>
             <div id="expertList"></div> <!-- Experts will be listed here -->
         </div>
     </div>
@@ -85,8 +84,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/python-hint.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.css">
 
-    <!-- Custom JS -->
+    <!-- Custom JS && CSS -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='css/style.css') }}"></script>
 </body>
 
 </html>

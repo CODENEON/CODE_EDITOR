@@ -1,6 +1,7 @@
 // Global variable to store the CodeMirror editor instance
 let editor;
 // This function will be triggered when the search form is submitted
+load_editor();
 function searchStackOverflow(query) {
 
     const resultsContainer = document.getElementById("searchResults");
@@ -65,57 +66,59 @@ function searchStackOverflow(query) {
         });
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    const codeEditor = document.getElementById('codeEditor');
-    if (codeEditor) {
-        editor = CodeMirror.fromTextArea(codeEditor, {
-            lineNumbers: true,
-            mode: "python",
-            theme: "material-darker",
-            hintOptions: {
-                completeSingle: false // Do not automatically complete when there's only one suggestion
-            },
-            extraKeys: {
-                'Tab': function (cm) { cm.showHint({ hint: CodeMirror.hint.python }); },  // Use Tab to trigger autocomplete
-                'Enter': function (cm) {
-                    if (cm.state.completionActive) {
-                        cm.state.completionActive.widget.pick();  // Select the suggestion if active
-                    } else {
-                        cm.execCommand('newlineAndIndent');  // Otherwise, just create a new line
-                    }
-                }
-            }
-        });
-
-        // Add event listener to toggle autocompletion when checkbox is changed
-        document.getElementById('autocompleteToggle').addEventListener('change', function () {
-            // Enable or disable the autocomplete feature based on checkbox status
-            if (this.checked) {
-                editor.setOption('extraKeys', {
-                    'Tab': function (cm) { cm.showHint({ hint: CodeMirror.hint.python }); },  // Trigger autocomplete with Tab
+function load_editor() {
+    document.addEventListener('DOMContentLoaded', () => {
+        const codeEditor = document.getElementById('codeEditor');
+        if (codeEditor) {
+            editor = CodeMirror.fromTextArea(codeEditor, {
+                lineNumbers: true,
+                mode: "python",
+                theme: "material-darker",
+                hintOptions: {
+                    completeSingle: false // Do not automatically complete when there's only one suggestion
+                },
+                extraKeys: {
+                    'Tab': function (cm) { cm.showHint({ hint: CodeMirror.hint.python }); },  // Use Tab to trigger autocomplete
                     'Enter': function (cm) {
                         if (cm.state.completionActive) {
                             cm.state.completionActive.widget.pick();  // Select the suggestion if active
                         } else {
-                            cm.execCommand('newlineAndIndent');  // Otherwise, create a new line
+                            cm.execCommand('newlineAndIndent');  // Otherwise, just create a new line
                         }
                     }
-                });
-            } else {
-                // Disable Tab-triggered autocomplete when checkbox is unchecked
-                editor.setOption('extraKeys', {
-                    'Enter': function (cm) {
-                        cm.execCommand('newlineAndIndent');
-                    }
-                });
-            }
-        });
-    }
+                }
+            });
+    
+            // Add event listener to toggle autocompletion when checkbox is changed
+            document.getElementById('autocompleteToggle').addEventListener('change', function () {
+                // Enable or disable the autocomplete feature based on checkbox status
+                if (this.checked) {
+                    editor.setOption('extraKeys', {
+                        'Tab': function (cm) { cm.showHint({ hint: CodeMirror.hint.python }); },  // Trigger autocomplete with Tab
+                        'Enter': function (cm) {
+                            if (cm.state.completionActive) {
+                                cm.state.completionActive.widget.pick();  // Select the suggestion if active
+                            } else {
+                                cm.execCommand('newlineAndIndent');  // Otherwise, create a new line
+                            }
+                        }
+                    });
+                } else {
+                    // Disable Tab-triggered autocomplete when checkbox is unchecked
+                    editor.setOption('extraKeys', {
+                        'Enter': function (cm) {
+                            cm.execCommand('newlineAndIndent');
+                        }
+                    });
+                }
+            });
+        }
+    
+        const resultsContainer = document.getElementById("searchResults");
+        resultsContainer.style.display = "none";
+    });
+}
 
-    const resultsContainer = document.getElementById("searchResults");
-    resultsContainer.style.display = "none";
-});
 
 
 // Function to handle form submit
@@ -163,6 +166,16 @@ function runCode() {
 }
 
 function recommendExpert(query) {
+    const expertList = document.getElementById('expertList');
+    const sidebar = document.getElementById('expertSidebar');
+    const loadingSpinner = document.getElementById("loadingSpinner");
+
+    // Clear any existing content in the expert list
+    expertList.innerHTML = '';
+
+    // Show loading spinner
+    loadingSpinner.style.display = "block";
+
     fetch('/recommend_expert', {
         method: 'POST',
         headers: {
@@ -170,55 +183,61 @@ function recommendExpert(query) {
         },
         body: JSON.stringify({ query: query })
     })
-        .then(response => response.json())
-        .then(data => {
-            // Hide loading spinner if it exists
-            document.getElementById("loadingSpinner").style.display = "none";
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading spinner
+        loadingSpinner.style.display = "none";
 
-            if (data && data.length > 0) {
-                // Prepare the expert list for the modal
-                const expertList = document.getElementById('expertList');
-                expertList.innerHTML = ''; // Clear existing list
-                data.forEach(expert => {
-                    const expertCard = document.createElement('div');
-                    expertCard.classList.add('expert-card');
-                    expertCard.innerHTML = `
+        if (data && data.length > 0) {
+            // Populate the sidebar with experts
+            data.forEach(expert => {
+                const expertCard = document.createElement('div');
+                expertCard.classList.add('expert-card');
+                expertCard.innerHTML = `
                     <h4>${expert.user_name || 'Unknown'}</h4>
-                    <p>Expertise: ${expert.expertise || 'Unknown'}</p>
+                    <p>Expertise: ${expert.expertise || 'Not specified'}</p>
                     <a href="${expert.link}" target="_blank">Go to Profile</a>
                 `;
-                    expertList.appendChild(expertCard);
-                });
+                expertList.appendChild(expertCard);
+            });
+        } else {
+            // Display a "no experts found" message
+            const noExpertsCard = document.createElement('div');
+            noExpertsCard.classList.add('expert-card', 'no-experts');
+            noExpertsCard.innerHTML = `
+                <h4>No Experts Found</h4>
+                <p>We couldn't find any experts matching your query.</p>
+            `;
+            expertList.appendChild(noExpertsCard);
+        }
 
-                // Show the modal
-                const modal = document.getElementById("expertModal");
-                modal.style.display = "block";
-            } else {
-                alert("No experts found for your query.");
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            resultsContainer.innerHTML = '<p>An error occurred while fetching experts.</p>';
-            document.getElementById("loadingSpinner").style.display = "none";
-        });
-    closeModal();
+        // Open the sidebar
+        sidebar.classList.add('open');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        loadingSpinner.style.display = "none";
+
+        // Show an error message in the sidebar
+        const errorCard = document.createElement('div');
+        errorCard.classList.add('expert-card', 'error-message');
+        errorCard.innerHTML = `
+            <h4>Error</h4>
+            <p>An error occurred while fetching experts. Please try again later.</p>
+        `;
+        expertList.appendChild(errorCard);
+
+        // Open the sidebar
+        sidebar.classList.add('open');
+    });
+    closeSidebar();
 }
 
-function closeModal() {
-    const closeModal = document.querySelector('.close');
-    closeModal.addEventListener('click', function () {
-        const modal = document.getElementById("expertModal");
-        modal.style.display = "none"; // Hide the modal
+function closeSidebar() {
+    document.querySelector('.sidebar .close-btn').addEventListener('click', function () {
+        const sidebar = document.getElementById('expertSidebar');
+        sidebar.classList.remove('open');
     });
-
-    // Close the modal if the user clicks outside of the modal content
-    window.onclick = function (event) {
-        const modal = document.getElementById("expertModal");
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
 }
 
 

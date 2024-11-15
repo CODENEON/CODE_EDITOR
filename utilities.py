@@ -28,8 +28,8 @@ class RecommendExpert:
                 expertise = self.graph.nodes[id]['expertise']
                 user_info.append({'user_id':neighbour, 'user_name': name, 'link': link, 'expertise':expertise})
 
-            return user_info if neighbors else ["No experts found"]
+            return user_info[:5] if neighbors else []
         except:
-            return ["No experts found"]
+            return []
 
 RE = RecommendExpert()

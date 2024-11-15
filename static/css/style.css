@@ -1,4 +1,7 @@
 /* Wrapper for search results and loading spinner */
+.container {
+    padding-left: 0px !important;
+}
 #searchResultsWrapper {
     position: relative;
     height: 500px;  /* Maximum height for results container */
@@ -87,66 +90,77 @@
     border-radius: 8px;
 }
 
-/* Style the modal (background) */
-.modal {
-    display: none; /* Hidden by default */
-    position: absolute; /* Position it absolutely */
-    z-index: 9999; /* Ensure it sits on top of other content */
-    left: 80%;
-    top: 70%;
-    transform: translate(-50%, -50%); /* Center it */
-    width: 80%;
-    max-width: 500px;
-}
 
-/* Modal content */
-.modal-content {
-    background-color: #fff; /* White background for content */
+/* Sidebar container */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Initially hidden */
+    width: 300px;
+    height: 100%;
+    background-color: #f8f9fa; /* Light background */
+    border-left: 1px solid #ddd;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Allow scrolling if content overflows */
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Allow scrolling if content is large */
+    transition: right 0.3s ease-in-out; /* Smooth slide-in animation */
+    z-index: 1000; /* Above all content */
 }
 
-/* Close button (x) */
-.close {
-    color: #aaa;
-    font-size: 30px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 25px;
-    cursor: pointer;
+/* Sidebar visible state */
+.sidebar.open {
+    right: 0; /* Slide in */
 }
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+/* Sidebar header */
+.sidebar h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
 }
 
-/* Expert card */
+/* Expert card styling */
 .expert-card {
-    background-color: #f9f9f9;
+    background-color: #EEE;
     padding: 15px;
-    margin: 10px 0;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.expert-card h4, .expert-card p, .expert-card a {
-    color: #333; /* Dark text color for visibility */
-    font-family: Arial, sans-serif;
+.expert-card h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.expert-card p {
+    margin: 5px 0;
+    color: #555;
 }
 
 .expert-card a {
-    color: #007bff; /* Blue link color */
+    display: inline-block;
+    margin-top: 5px;
+    color: #007bff;
     text-decoration: none;
+    font-size: 14px;
 }
 
 .expert-card a:hover {
     text-decoration: underline;
 }
 
+/* Close button for sidebar */
+.sidebar .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    font-weight: bold;
+}

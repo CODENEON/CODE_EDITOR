@@ -29,9 +29,12 @@ def search_stack_overflow():
         response.raise_for_status()  # Check if the request was successful
         response_data = response.json()  # Parse JSON response
         items = response_data.get('items', [])
-        for item in items[:3]:
-            RE.add_user(item['owner']['user_id'], item['owner']['display_name'], item['owner']['link'], keywords[0])
-
+        
+        for item in items:
+            owner = item.get('owner', {})
+            if 'user_id' in owner and 'display_name' in owner and 'link' in owner:
+                RE.add_user(owner['user_id'], owner['display_name'], owner['link'], keywords[0] if keywords else 'python')
+            
         return jsonify(response_data)
     
     except requests.exceptions.RequestException as e:
