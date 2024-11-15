@@ -125,15 +125,17 @@ function toggleSearchButton() {
     const queryInput = document.getElementById("query");
     const searchButton = document.getElementById("searchButton");
 
-    // Show the button if there's input, hide it otherwise
+    // Enable the button if there's input, disable it otherwise
     if (queryInput.value.trim() !== "") {
-        searchButton.style.display = "inline-block";
+        searchButton.disabled = false;
+        searchButton.style.backgroundColor = ""; // Restore default color
+        searchButton.style.cursor = "pointer"; // Change to pointer cursor
     } else {
-        searchButton.style.display = "none";
+        searchButton.disabled = true;
+        searchButton.style.backgroundColor = "gray"; // Gray for disabled state
+        searchButton.style.cursor = "not-allowed"; // Show "not-allowed" cursor
     }
 }
-
-
 
 
 // Function to handle form submit

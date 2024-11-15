@@ -29,12 +29,23 @@
                 <h4>Search Stack Overflow</h4>
                 <form id="searchForm" onsubmit="event.preventDefault(); searchStackOverflow($('#query').val());">
                     <div class="input-group">
-                        <input type="text" id="query" class="form-control" placeholder="Enter your query..." oninput="toggleSearchButton()">
+                        <input 
+                            type="text" 
+                            id="query" 
+                            class="form-control" 
+                            placeholder="Enter your query..." 
+                            oninput="toggleSearchButton()">
                         <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit" id="searchButton" style="display: none;">Search</button>
+                            <button 
+                                class="btn btn-primary" 
+                                type="submit" 
+                                id="searchButton" 
+                                disabled
+                                style="background-color: gray; cursor: not-allowed;">Search</button>
                         </div>
                     </div>
-                </form>                
+                </form>
+                               
                 <div id="searchResultsWrapper">
                     <div id="loadingSpinner" class="loading-spinner" style="display: none;">
                         <!-- Loading spinner animation -->
