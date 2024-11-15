@@ -10,6 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
             theme: "material-darker",
             hintOptions: {
                 completeSingle: false // Do not automatically complete when there's only one suggestion
+            },
+            extraKeys: {
+                'Tab': function(cm) { cm.execCommand('autocomplete'); },  // Use Tab to trigger autocomplete
+                'Enter': function(cm) {
+                    if (cm.state.completionActive) {
+                        cm.state.completionActive.widget.pick();  // Select the suggestion if active
+                    } else {
+                        cm.execCommand('newlineAndIndent');  // Otherwise, just create a new line
+                    }
+                }
             }
         });
 
@@ -28,10 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Enable or disable the autocomplete feature based on checkbox status
             if (this.checked) {
                 // Enable autocompletion
-                editor.on('keydown', handleKeydown);
+                editor.on('inputRead', handleKeydown);
             } else {
-                // Disable autocompletion (remove the keydown listener)
-                editor.off('keydown', handleKeydown);
+                // Disable autocompletion (remove the inputRead listener)
+                editor.off('inputRead', handleKeydown);
             }
         });
     }
@@ -61,8 +71,6 @@ function searchStackOverflow(query) {
     })
     .catch(error => console.error('Error:', error));
 }
-
-
 
 // Function to handle running code
 function runCode() {
@@ -120,7 +128,7 @@ function displayResults(data) {
 
             // Optionally add additional details
             const snippet = document.createElement("p");
-            snippet.textContent = item.owner.display_name|| "";
+            snippet.textContent = item.owner.display_name || "";
             resultItem.appendChild(snippet);
 
             // Append the result item to the results container
@@ -141,8 +149,6 @@ function displayResults(data) {
         resultsContainer.style.display = "block";
     }
 }
-
-
 
 function clearOutput() {
     document.getElementById("outputArea").textContent = "";
