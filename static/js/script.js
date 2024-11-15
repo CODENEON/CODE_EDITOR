@@ -245,3 +245,47 @@ function closeSidebar() {
 function clearOutput() {
     document.getElementById("outputArea").textContent = "";
 }
+
+// Function to export the code in the editor to a file
+function exportCode() {
+    const code = editor.getValue();  // Get the code from CodeMirror
+
+    // Create a Blob with the code content
+    const blob = new Blob([code], { type: 'text/plain' });
+
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'code.py';  // Set the file name (you can customize it)
+    
+    // Trigger the download
+    link.click();
+}
+
+// Function to import code from a file into the editor
+function importCode(file) {
+    const reader = new FileReader();
+
+    // When the file is read, load it into the editor
+    reader.onload = function (event) {
+        const code = event.target.result;  // File content
+        editor.setValue(code);  // Set the code in CodeMirror editor
+    };
+
+    // Read the file as text
+    reader.readAsText(file);
+}
+
+// Event listeners for the buttons
+document.getElementById('exportBtn').addEventListener('click', exportCode);
+document.getElementById('importBtn').addEventListener('click', function () {
+    document.getElementById('importFile').click();  // Trigger the file input
+});
+
+// Event listener for the file input (importing code)
+document.getElementById('importFile').addEventListener('change', function (event) {
+    const file = event.target.files[0];  // Get the selected file
+    if (file) {
+        importCode(file);  // Import the code from the file
+    }
+});
