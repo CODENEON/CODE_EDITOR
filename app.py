@@ -15,8 +15,7 @@ def search_stack_overflow():
     try:
         keywords = find_keywords(query)
         tags = "; ".join(keywords)
-        tags = 'python' + '; ' + tags
-        print(tags) # need to remove later
+        tags = tags + '; ' + 'python'
         response = requests.get(
             STACK_OVERFLOW_API_URL,
             params={
@@ -28,7 +27,12 @@ def search_stack_overflow():
             }
         )
         response.raise_for_status()  # Check if the request was successful
-        return jsonify(response.json())
+        response_data = response.json()  # Parse JSON response
+        items = response_data.get('items', [])
+        for item in items[:3]:
+            RE.add_user(item['owner']['user_id'], item['owner']['display_name'], item['owner']['link'], keywords[0])
+
+        return jsonify(response_data)
     
     except requests.exceptions.RequestException as e:
         print(f"Request error: {e}")  # Log any request errors
@@ -57,6 +61,19 @@ def run_code():
         sys.stdout = old_stdout
 
     return jsonify({"output": output})
+
+@app.route('/recommend_expert', methods=['POST'])
+def recommend_expert():
+    query = request.json.get('query')
+
+    try:
+        # Extract keywords and search Stack Overflow
+        keywords = find_keywords(query)
+        top_keyword = keywords[0] if keywords else 'python'  # Use top keyword for expertise matching
+        return jsonify(RE.recommend_users(top_keyword))
+    
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': 'Error fetching recommendations'}), 500
 
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000/")
