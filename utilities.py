@@ -1,5 +1,11 @@
 #Utility methods file
 from dependencies import *
+
+def find_keywords(query):
+    kw_extractor = yake.KeywordExtractor()
+    keywords = kw_extractor.extract_keywords(query)
+    return [kw[0] for kw in keywords][:5]
+    
 class CQA:
     def __init__(self):
         self.graph = nx.Graph()  # Graph to model user-topic relationships

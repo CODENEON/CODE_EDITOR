@@ -4,7 +4,6 @@ from utilities import *
 # Initialize the Flask app
 app = Flask(__name__)
 
-# routes and functions
 @app.route('/')
 def index():
     return render_template("index.html")
@@ -12,21 +11,23 @@ def index():
 @app.route('/search_stack_overflow', methods=['POST'])
 def search_stack_overflow():
     query = request.json.get('query')
-    print(f"Search Query: {query}")  # Log the query for debugging
     
     try:
+        keywords = find_keywords(query)
+        tags = "; ".join(keywords)
+        tags = 'python' + '; ' + tags
+        print(tags) # need to remove later
         response = requests.get(
             STACK_OVERFLOW_API_URL,
             params={
                 'intitle': query,
-                'tagged': 'python',       # Only search for questions tagged with 'python'
+                'tagged': tags,       # Only search for questions tagged with 'python'
                 'site': 'stackoverflow',
                 'order': 'desc',
-                'sort': 'activity'
+                'sort': 'votes'
             }
         )
         response.raise_for_status()  # Check if the request was successful
-        print(f"API Response: {response.json()}")  # Log the response for debugging
         return jsonify(response.json())
     
     except requests.exceptions.RequestException as e:
