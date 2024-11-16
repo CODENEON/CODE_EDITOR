@@ -169,44 +169,7 @@ function runCode() {
             document.getElementById("outputArea").textContent = "An error occurred while running the code.";
         });
 }
-function runCode() {
-    const code = editor.getValue();
-    // Use a regex to find the first input() statement with an optional prompt
-    const inputMatch = code.match(/input\(["']([^"']*)["']\)/);
-    let userInput = null;
 
-    if (inputMatch) {
-        // Extract the text inside input("example") or provide a default
-        const promptText = inputMatch[1] || "Provide input for the program:";
-        userInput = prompt(promptText); // Ask the user for input
-    }
-
-    fetch('/run_code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: code, input: userInput }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();  // Parse the JSON response
-    })
-    .then(data => {
-        // Display the result or error message in the output area
-        if (data.error) {
-            document.getElementById("outputArea").textContent = "Error: " + data.error;
-        } else {
-            document.getElementById("outputArea").textContent = data.output;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById("outputArea").textContent = "An error occurred while running the code.";
-    });
-}
 
 function recommendExpert(query) {
     const expertList = document.getElementById('expertList');
