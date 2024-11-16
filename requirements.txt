@@ -2,4 +2,4 @@ networkx
 requests
 flask
 yake
-webbrowser
+
