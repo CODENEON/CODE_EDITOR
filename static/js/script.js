@@ -171,7 +171,15 @@ function runCode() {
 }
 function runCode() {
     const code = editor.getValue();
-    const userInput = prompt("Provide input for the program (if needed):");
+    // Use a regex to find the first input() statement with an optional prompt
+    const inputMatch = code.match(/input\(["']([^"']*)["']\)/);
+    let userInput = null;
+
+    if (inputMatch) {
+        // Extract the text inside input("example") or provide a default
+        const promptText = inputMatch[1] || "Provide input for the program:";
+        userInput = prompt(promptText); // Ask the user for input
+    }
 
     fetch('/run_code', {
         method: 'POST',
