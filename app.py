@@ -79,14 +79,6 @@ def recommend_expert():
     except requests.exceptions.RequestException as e:
         return jsonify({'error': 'Error fetching recommendations'}), 500
 
-def open_browser():
-    webbrowser.open_new("http://127.0.0.1:5000/")
-
-def open_browser_once():
-    if not hasattr(open_browser_once, "opened"):
-        open_browser()  # Open the browser automatically when the app starts
-        open_browser_once.opened = True
-
 if __name__ == "__main__":
-    open_browser_once()  # Open the browser automatically when the app starts
+    
     app.run(debug=True, use_reloader = False)
