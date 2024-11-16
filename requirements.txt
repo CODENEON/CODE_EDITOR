@@ -1,6 +1,5 @@
 networkx
 requests
-pickle
 flask
 yake
 webbrowser
