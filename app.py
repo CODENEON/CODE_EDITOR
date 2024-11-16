@@ -44,23 +44,24 @@ def search_stack_overflow():
 @app.route('/run_code', methods=['POST'])
 def run_code():
     code = request.json.get('code')
+    user_input = request.json.get('input', "")  # Get user-supplied input
     output = ""
     old_stdout = sys.stdout
     redirected_output = io.StringIO()
     sys.stdout = redirected_output
 
     try:
-        # Try executing the code
-        exec(code, {})
-        output = redirected_output.getvalue()  # Capture any print output
+        # Provide user input to the code
+        exec_globals = {'input': lambda prompt="": user_input}
+
+        # Execute the code
+        exec(code, exec_globals)
+        output = redirected_output.getvalue()
     except SyntaxError as e:
-        # Specifically catch syntax errors and return them
         output = f"Syntax Error: {str(e)}"
     except Exception as e:
-        # Catch any other exceptions and return the error message
         output = f"Error: {str(e)}"
     finally:
-        # Restore the original stdout to avoid affecting other parts of the program
         sys.stdout = old_stdout
 
     return jsonify({"output": output})
