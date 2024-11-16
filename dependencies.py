@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for
 import requests
 import sys
 import io
-import webbrowser
 import yake
 import pickle
 import os

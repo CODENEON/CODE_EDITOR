@@ -138,63 +138,43 @@ function handleSearchSubmit(event) {
 function runCode() {
     const code = editor.getValue();
 
-    // Check if the code contains the word 'input('
-    if (code.includes('input(')) {
-        const userInput = prompt("Provide input for the program (if needed):");
+    // Use regex to capture the text inside input("example")
+    const inputRegex = /input\(["']([^"']*)["']\)/;
+    const inputMatch = code.match(inputRegex);
 
-        fetch('/run_code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ code: code, input: userInput }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Display the result or error message in the output area
-            if (data.error) {
-                document.getElementById("outputArea").textContent = "Error: " + data.error;
-            } else {
-                document.getElementById("outputArea").textContent = data.output;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById("outputArea").textContent = "An error occurred while running the code.";
-        });
-    } else {
-        // If no input() is present, send the code without prompting for input
-        fetch('/run_code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ code: code }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Display the result or error message in the output area
-            if (data.error) {
-                document.getElementById("outputArea").textContent = "Error: " + data.error;
-            } else {
-                document.getElementById("outputArea").textContent = data.output;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById("outputArea").textContent = "An error occurred while running the code.";
-        });
+    let userInput = null;
+
+    if (inputMatch) {
+        
+        const promptText = inputMatch[1] || "Provide input for the program:";
+        userInput = prompt(promptText); 
     }
+
+    fetch('/run_code', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: code, input: userInput }), // Send the input along with the code
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Display the result or error message in the output area
+        if (data.error) {
+            document.getElementById("outputArea").textContent = "Error: " + data.error;
+        } else {
+            document.getElementById("outputArea").textContent = data.output;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("outputArea").textContent = "An error occurred while running the code.";
+    });
 }
 
 
