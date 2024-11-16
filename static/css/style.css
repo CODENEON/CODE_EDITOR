@@ -1,10 +1,13 @@
-/* Wrapper for search results and loading spinner */
+
 .container {
     padding-left: 0px !important;
 }
+
+/* Wrapper for search results and loading spinner */
+
 #searchResultsWrapper {
     position: relative;
-    height: 500px;  /* Maximum height for results container */
+    height: 500px;  
     overflow-y: scroll;  /* Allow vertical scrolling */
     margin-top: 8px;
     border-radius: 8px;
@@ -77,7 +80,7 @@
     text-decoration: underline;
 }
 
-/* Metadata under the title */
+
 .results-container small {
     font-size: 0.9rem;
     color: #555;
@@ -85,7 +88,6 @@
     margin-top: 5px;
 }
 
-/* No results message */
 .no-results {
     text-align: center;
     font-size: 1.2rem;
@@ -96,8 +98,6 @@
     border-radius: 8px;
 }
 
-
-/* Sidebar container */
 .sidebar {
     position: fixed;
     top: 0;
@@ -113,9 +113,8 @@
     z-index: 1000; /* Above all content */
 }
 
-/* Sidebar visible state */
 .sidebar.open {
-    right: 0; /* Slide in */
+    right: 0; 
 }
 
 /* Sidebar header */
@@ -126,7 +125,6 @@
     padding-bottom: 5px;
 }
 
-/* Expert card styling */
 .expert-card {
     background-color: #EEE;
     padding: 15px;
@@ -160,7 +158,6 @@
     text-decoration: underline;
 }
 
-/* Close button for sidebar */
 .sidebar .close-btn {
     position: absolute;
     top: 10px;

@@ -1,7 +1,7 @@
-// Global variable to store the CodeMirror editor instance
 let editor;
-// This function will be triggered when the search form is submitted
+
 load_editor();
+fileOperationsEventListeners();
 function searchStackOverflow(query) {
 
     const resultsContainer = document.getElementById("searchResults");
@@ -9,14 +9,11 @@ function searchStackOverflow(query) {
     const resultsWrapper = document.getElementById("searchResultsWrapper");
 
     resultsContainer.style.display = "none";
-    // Show the loading spinner
     loadingSpinner.style.display = "block";
-    resultsContainer.innerHTML = "";  // Clear previous results
+    resultsContainer.innerHTML = "";
 
-    // Hide the "No results" message if any
     resultsWrapper.querySelector('.no-results')?.remove();
 
-    // Use fetch to make the AJAX request
     fetch('/search_stack_overflow', {
         method: 'POST',
         headers: {
@@ -31,12 +28,9 @@ function searchStackOverflow(query) {
             return response.json();  // Parse the JSON response
         })
         .then(data => {
-            // Hide the loading spinner once the request is done
             loadingSpinner.style.display = "none";
 
-            // Check if the response has items
             if (data.items && data.items.length > 0) {
-                // Display the search results
                 resultsContainer.innerHTML = data.items.map(item => {
                     return `\
                     <div>\
@@ -44,16 +38,13 @@ function searchStackOverflow(query) {
                         <small>By ${item.owner.display_name} - &#x1F441; ${item.view_count}</small>\
                     </div>`;
                 }).join('');
-                // Show the results container when results are available
                 resultsContainer.style.display = "block";
             } else {
-                // If no results, display a message
                 resultsContainer.innerHTML = "";
                 const noResultsMessage = document.createElement("div");
                 noResultsMessage.classList.add("no-results");
                 noResultsMessage.textContent = "No results found.";
                 resultsWrapper.appendChild(noResultsMessage);
-                // Hide the results container if no results
                 resultsContainer.style.display = "none";
             }
         })
@@ -61,7 +52,6 @@ function searchStackOverflow(query) {
             console.error('Error:', error);
             resultsContainer.innerHTML = "An error occurred while searching.";
             loadingSpinner.style.display = "none";
-            // Hide the results container if an error occurs
             resultsContainer.style.display = "none";
         });
 }
@@ -88,7 +78,7 @@ function load_editor() {
                     }
                 }
             });
-    
+
             // Add event listener to toggle autocompletion when checkbox is changed
             document.getElementById('autocompleteToggle').addEventListener('change', function () {
                 // Enable or disable the autocomplete feature based on checkbox status
@@ -113,7 +103,7 @@ function load_editor() {
                 }
             });
         }
-    
+
         const resultsContainer = document.getElementById("searchResults");
         resultsContainer.style.display = "none";
     });
@@ -146,10 +136,9 @@ function handleSearchSubmit(event) {
 }
 
 
-// Function to handle running code
 function runCode() {
     // Ensure the CodeMirror editor instance is used
-    const code = editor.getValue();  // Use the global `editor` instance to get the code
+    const code = editor.getValue();
 
     // Display a loading message
     document.getElementById("outputArea").textContent = "Running...";
@@ -187,10 +176,7 @@ function recommendExpert(query) {
     const sidebar = document.getElementById('expertSidebar');
     const loadingSpinner = document.getElementById("loadingSpinner");
 
-    // Clear any existing content in the expert list
     expertList.innerHTML = '';
-
-    // Show loading spinner
     loadingSpinner.style.display = "block";
 
     fetch('/recommend_expert', {
@@ -200,53 +186,48 @@ function recommendExpert(query) {
         },
         body: JSON.stringify({ query: query })
     })
-    .then(response => response.json())
-    .then(data => {
-        // Hide loading spinner
-        loadingSpinner.style.display = "none";
+        .then(response => response.json())
+        .then(data => {
 
-        if (data && data.length > 0) {
-            // Populate the sidebar with experts
-            data.forEach(expert => {
-                const expertCard = document.createElement('div');
-                expertCard.classList.add('expert-card');
-                expertCard.innerHTML = `
+            loadingSpinner.style.display = "none";
+
+            if (data && data.length > 0) {
+                data.forEach(expert => {
+                    const expertCard = document.createElement('div');
+                    expertCard.classList.add('expert-card');
+                    expertCard.innerHTML = `
                     <h4>${expert.user_name || 'Unknown'}</h4>
                     <p>Expertise: ${expert.expertise || 'Not specified'}</p>
                     <a href="${expert.link}" target="_blank">Go to Profile</a>
                 `;
-                expertList.appendChild(expertCard);
-            });
-        } else {
-            // Display a "no experts found" message
-            const noExpertsCard = document.createElement('div');
-            noExpertsCard.classList.add('expert-card', 'no-experts');
-            noExpertsCard.innerHTML = `
+                    expertList.appendChild(expertCard);
+                });
+            } else {
+                const noExpertsCard = document.createElement('div');
+                noExpertsCard.classList.add('expert-card', 'no-experts');
+                noExpertsCard.innerHTML = `
                 <h4>No Experts Found</h4>
                 <p>We couldn't find any experts matching your query.</p>
             `;
-            expertList.appendChild(noExpertsCard);
-        }
+                expertList.appendChild(noExpertsCard);
+            }
 
-        // Open the sidebar
-        sidebar.classList.add('open');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        loadingSpinner.style.display = "none";
+            sidebar.classList.add('open');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingSpinner.style.display = "none";
 
-        // Show an error message in the sidebar
-        const errorCard = document.createElement('div');
-        errorCard.classList.add('expert-card', 'error-message');
-        errorCard.innerHTML = `
+            const errorCard = document.createElement('div');
+            errorCard.classList.add('expert-card', 'error-message');
+            errorCard.innerHTML = `
             <h4>Error</h4>
             <p>An error occurred while fetching experts. Please try again later.</p>
         `;
-        expertList.appendChild(errorCard);
+            expertList.appendChild(errorCard);
 
-        // Open the sidebar
-        sidebar.classList.add('open');
-    });
+            sidebar.classList.add('open');
+        });
     closeSidebar();
 }
 
@@ -263,9 +244,8 @@ function clearOutput() {
     document.getElementById("outputArea").textContent = "";
 }
 
-// Function to export the code in the editor to a file
 function exportCode() {
-    const code = editor.getValue();  // Get the code from CodeMirror
+    const code = editor.getValue();
 
     // Create a Blob with the code content
     const blob = new Blob([code], { type: 'text/plain' });
@@ -274,12 +254,11 @@ function exportCode() {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'code.py';  // Set the file name (you can customize it)
-    
+
     // Trigger the download
     link.click();
 }
 
-// Function to import code from a file into the editor
 function importCode(file) {
     const reader = new FileReader();
 
@@ -293,16 +272,17 @@ function importCode(file) {
     reader.readAsText(file);
 }
 
-// Event listeners for the buttons
-document.getElementById('exportBtn').addEventListener('click', exportCode);
-document.getElementById('importBtn').addEventListener('click', function () {
-    document.getElementById('importFile').click();  // Trigger the file input
-});
+function fileOperationsEventListeners() {
+    document.getElementById('exportBtn').addEventListener('click', exportCode);
+    document.getElementById('importBtn').addEventListener('click', function () {
+        document.getElementById('importFile').click();  // Trigger the file input
+    });
 
-// Event listener for the file input (importing code)
-document.getElementById('importFile').addEventListener('change', function (event) {
-    const file = event.target.files[0];  // Get the selected file
-    if (file) {
-        importCode(file);  // Import the code from the file
-    }
-});
+    document.getElementById('importFile').addEventListener('change', function (event) {
+        const file = event.target.files[0];  // Get the selected file
+        if (file) {
+            importCode(file);  // Import the code from the file
+        }
+    });
+}
+
