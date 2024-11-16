@@ -136,25 +136,24 @@ function handleSearchSubmit(event) {
 }
 
 function runCode() {
-    // Ensure the CodeMirror editor instance is used
     const code = editor.getValue();
-    const userInput = prompt("Provide input for the program (if needed):");
-    // Display a loading message
-    document.getElementById("outputArea").textContent = "Running...";
 
-    // Use fetch to send the code to the backend for execution
-    fetch('/run_code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ code: code })  // Send the code as a JSON payload
-    })
+    // Check if the code contains the word 'input('
+    if (code.includes('input(')) {
+        const userInput = prompt("Provide input for the program (if needed):");
+
+        fetch('/run_code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: code, input: userInput }),
+        })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();  // Parse the JSON response
+            return response.json();
         })
         .then(data => {
             // Display the result or error message in the output area
@@ -168,45 +167,36 @@ function runCode() {
             console.error('Error:', error);
             document.getElementById("outputArea").textContent = "An error occurred while running the code.";
         });
-}
-function runCode() {
-    const code = editor.getValue();
-    // Use a regex to find the first input() statement with an optional prompt
-    const inputMatch = code.match(/input\(["']([^"']*)["']\)/);
-    let userInput = null;
-
-    if (inputMatch) {
-        // Extract the text inside input("example") or provide a default
-        const promptText = inputMatch[1] || "Provide input for the program:";
-        userInput = prompt(promptText); // Ask the user for input
+    } else {
+        // If no input() is present, send the code without prompting for input
+        fetch('/run_code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: code }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Display the result or error message in the output area
+            if (data.error) {
+                document.getElementById("outputArea").textContent = "Error: " + data.error;
+            } else {
+                document.getElementById("outputArea").textContent = data.output;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("outputArea").textContent = "An error occurred while running the code.";
+        });
     }
-
-    fetch('/run_code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: code, input: userInput }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();  // Parse the JSON response
-    })
-    .then(data => {
-        // Display the result or error message in the output area
-        if (data.error) {
-            document.getElementById("outputArea").textContent = "Error: " + data.error;
-        } else {
-            document.getElementById("outputArea").textContent = data.output;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById("outputArea").textContent = "An error occurred while running the code.";
-    });
 }
+
 
 function recommendExpert(query) {
     const expertList = document.getElementById('expertList');
