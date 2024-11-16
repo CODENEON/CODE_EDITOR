@@ -135,11 +135,10 @@ function handleSearchSubmit(event) {
     searchStackOverflow(query);
 }
 
-
 function runCode() {
     // Ensure the CodeMirror editor instance is used
     const code = editor.getValue();
-
+    const userInput = prompt("Provide input for the program (if needed):");
     // Display a loading message
     document.getElementById("outputArea").textContent = "Running...";
 
@@ -169,6 +168,36 @@ function runCode() {
             console.error('Error:', error);
             document.getElementById("outputArea").textContent = "An error occurred while running the code.";
         });
+}
+function runCode() {
+    const code = editor.getValue();
+    const userInput = prompt("Provide input for the program (if needed):");
+
+    fetch('/run_code', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: code, input: userInput }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();  // Parse the JSON response
+    })
+    .then(data => {
+        // Display the result or error message in the output area
+        if (data.error) {
+            document.getElementById("outputArea").textContent = "Error: " + data.error;
+        } else {
+            document.getElementById("outputArea").textContent = data.output;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("outputArea").textContent = "An error occurred while running the code.";
+    });
 }
 
 function recommendExpert(query) {
